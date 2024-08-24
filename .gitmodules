@@ -10,3 +10,5 @@
 [submodule "restaurant-service"]
 	path = restaurant-service
 	url = https://github.com/nus-iss-swe5001-team7/restaurant-service.git
+
+#testing
