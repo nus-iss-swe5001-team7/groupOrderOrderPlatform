@@ -105,12 +105,10 @@ jobs:
 
           # Iterate over each image and process
           for image in "${images[@]}"; do
-            docker pull secrets.DOCKERHUB_USERNAME/$image
-            docker tag secrets.DOCKERHUB_USERNAME/$image secrets.AWS_ACCOUNT_ID.dkr.ecr.secrets.AWS_REGION.amazonaws.com/${image%%:*}:${image##*:}
-            docker push secrets.AWS_ACCOUNT_ID.dkr.ecr.secrets.AWS_REGION.amazonaws.com/${image%%:*}:${image##*:}
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/$image
+            docker tag ${{ secrets.DOCKERHUB_USERNAME }}/$image ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/$(echo ${image%%:*} | tr '[:upper:]' '[:lower:]'):${image##*:}
+            docker push ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/${image%%:*}:${image##*:}
           done
-
-
 
 
 
