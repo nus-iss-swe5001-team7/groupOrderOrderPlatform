@@ -64,33 +64,55 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, Tag, and Push User Service Image
-        run: |
-          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG=${{ github.sha }}
-          docker build -t $ECR_REGISTRY/user-service:$IMAGE_TAG ./user-service
-          docker push $ECR_REGISTRY/user-service:$IMAGE_TAG
+      # - name: Build, Tag, and Push User Service Image
+      #   run: |
+      #     ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+      #     IMAGE_TAG=${{ github.sha }}
+      #     docker build -t $ECR_REGISTRY/user-service:$IMAGE_TAG ./user-service
+      #     docker push $ECR_REGISTRY/user-service:$IMAGE_TAG
 
-      - name: Build, Tag, and Push Restaurant Service Image
-        run: |
-          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG=${{ github.sha }}
-          docker build -t $ECR_REGISTRY/restaurant-service:$IMAGE_TAG ./restaurant-service
-          docker push $ECR_REGISTRY/restaurant-service:$IMAGE_TAG
+      # - name: Build, Tag, and Push Restaurant Service Image
+      #   run: |
+      #     ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+      #     IMAGE_TAG=${{ github.sha }}
+      #     docker build -t $ECR_REGISTRY/restaurant-service:$IMAGE_TAG ./restaurant-service
+      #     docker push $ECR_REGISTRY/restaurant-service:$IMAGE_TAG
 
-      - name: Build, Tag, and Push API Gateway Image
-        run: |
-          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG=${{ github.sha }}
-          docker build -t $ECR_REGISTRY/api-gateway:$IMAGE_TAG ./api-gateway
-          docker push $ECR_REGISTRY/api-gateway:$IMAGE_TAG
+      # - name: Build, Tag, and Push API Gateway Image
+      #   run: |
+      #     ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+      #     IMAGE_TAG=${{ github.sha }}
+      #     docker build -t $ECR_REGISTRY/api-gateway:$IMAGE_TAG ./api-gateway
+      #     docker push $ECR_REGISTRY/api-gateway:$IMAGE_TAG
 
-      - name: Build, Tag, and Push Service Registry Image
+      # - name: Build, Tag, and Push Service Registry Image
+      #   run: |
+      #     ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+      #     IMAGE_TAG=${{ github.sha }}
+      #     docker build -t $ECR_REGISTRY/service-registry:$IMAGE_TAG ./service-registry
+      #     docker push $ECR_REGISTRY/service-registry:$IMAGE_TAG
+
+#testing
+      - name: Process each microservice
         run: |
-          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG=${{ github.sha }}
-          docker build -t $ECR_REGISTRY/service-registry:$IMAGE_TAG ./service-registry
-          docker push $ECR_REGISTRY/service-registry:$IMAGE_TAG
+          # Define an array of images
+          images=(
+            "user-service:latest"
+            "restaurant-service:latest"
+            "service-registry:latest"
+            "api-gateway:latest"
+          )
+
+          # Iterate over each image and process
+          for image in "${images[@]}"; do
+            docker pull secrets.DOCKERHUB_USERNAME/$image
+            docker tag secrets.DOCKERHUB_USERNAME/$image secrets.AWS_ACCOUNT_ID.dkr.ecr.secrets.AWS_REGION.amazonaws.com/${image%%:*}:${image##*:}
+            docker push secrets.AWS_ACCOUNT_ID.dkr.ecr.secrets.AWS_REGION.amazonaws.com/${image%%:*}:${image##*:}
+          done
+
+
+
+
 
 #  deploy:
 #    #Depends on build's job
