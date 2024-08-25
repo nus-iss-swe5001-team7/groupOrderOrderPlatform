@@ -12,13 +12,13 @@ on:
 # env:
 #   ECR_REPOSITORY: nusiss/swe5001
 
-env:
-  # Define your public ECR repositories
-  ECR_PUBLIC_REPOSITORIES: |
-    user-service:public.ecr.aws/a5o0l5p8/user-service
-    restaurant-service:public.ecr.aws/a5o0l5p8/restaurant-service
-    service-registry:public.ecr.aws/a5o0l5p8/service-registry
-    api-gateway:public.ecr.aws/a5o0l5p8/api-gateway
+# env:
+#   # Define your public ECR repositories
+#   ECR_PUBLIC_REPOSITORIES: |
+#     user-service:public.ecr.aws/a5o0l5p8/user-service
+#     restaurant-service:public.ecr.aws/a5o0l5p8/restaurant-service
+#     service-registry:public.ecr.aws/a5o0l5p8/service-registry
+#     api-gateway:public.ecr.aws/a5o0l5p8/api-gateway
 
 jobs:
 
@@ -69,25 +69,25 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # Working flow commented for temp testing
-      # - name: Login to Amazon ECR
-      #   id: login-ecr
-      #   uses: aws-actions/amazon-ecr-login@v1
+      #Working flow commented for temp testing
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-      # Added to test for public repo
-      - name: Login to Amazon ECR Public
-        run: |
-          aws ecr-public get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin public.ecr.aws
+      # # Added to test for public repo
+      # - name: Login to Amazon ECR Public
+      #   run: |
+      #     aws ecr-public get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin public.ecr.aws
 
-      - name: Process each microservice
-        run: |
-          # Convert ECR_PUBLIC_REPOSITORIES to a list of repository URLs
-          while IFS=":" read -r service repo_url; do
-            echo "Processing $service"
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/$service
-            docker tag ${{ secrets.DOCKERHUB_USERNAME }}/$service $repo_url:latest
-            docker push $repo_url:latest
-          done <<< "$ECR_PUBLIC_REPOSITORIES"
+      # - name: Process each microservice
+      #   run: |
+      #     # Convert ECR_PUBLIC_REPOSITORIES to a list of repository URLs
+      #     while IFS=":" read -r service repo_url; do
+      #       echo "Processing $service"
+      #       docker pull ${{ secrets.DOCKERHUB_USERNAME }}/$service
+      #       docker tag ${{ secrets.DOCKERHUB_USERNAME }}/$service $repo_url:latest
+      #       docker push $repo_url:latest
+      #     done <<< "$ECR_PUBLIC_REPOSITORIES"
 
 
 
@@ -121,22 +121,22 @@ jobs:
       #     docker push $ECR_REGISTRY/service-registry:$IMAGE_TAG
 
 # Working flow, commented for temp testing
-      # - name: Process each microservice
-      #   run: |
-      #     # Define an array of images
-      #     images=(
-      #       "user-service:latest"
-      #       "restaurant-service:latest"
-      #       "service-registry:latest"
-      #       "api-gateway:latest"
-      #     )
+      - name: Process each microservice
+        run: |
+          # Define an array of images
+          images=(
+            "user-service:latest"
+            "restaurant-service:latest"
+            "service-registry:latest"
+            "api-gateway:latest"
+          )
 
-      #     # Iterate over each image and process
-      #     for image in "${images[@]}"; do
-      #       docker pull ${{ secrets.DOCKERHUB_USERNAME }}/$image
-      #       docker tag ${{ secrets.DOCKERHUB_USERNAME }}/$image ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/$(echo ${image%%:*} | tr '[:upper:]' '[:lower:]'):${image##*:}
-      #       docker push ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/${image%%:*}:${image##*:}
-      #     done
+          # Iterate over each image and process
+          for image in "${images[@]}"; do
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/$image
+            docker tag ${{ secrets.DOCKERHUB_USERNAME }}/$image ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/$(echo ${image%%:*} | tr '[:upper:]' '[:lower:]'):${image##*:}
+            docker push ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/${image%%:*}:${image##*:}
+          done
 
 
 # Old deployment steps
