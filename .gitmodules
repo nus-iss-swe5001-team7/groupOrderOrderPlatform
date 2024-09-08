@@ -13,3 +13,4 @@
 [submodule "order-service"]
 	path = order-service
 	url = https://github.com/nus-iss-swe5001-team7/order-service.git
+	branch = master
