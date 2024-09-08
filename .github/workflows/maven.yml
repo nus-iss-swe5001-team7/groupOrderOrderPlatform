@@ -32,6 +32,11 @@ jobs:
         submodules: true  # Ensures submodules are initialized and updated
         fetch-depth: 0
 
+    - name: Set up Git user
+      run: |
+        git config --global user.name "NicholasYSX"
+        git config --global user.email "e1337517@u.nus.edu"
+
     - name: Update Submodules
       run: |
         git submodule sync
@@ -39,6 +44,12 @@ jobs:
         git add .
         git commit -m "Update submodules" || echo "No changes to commit"
         git push origin HEAD:main || echo "Nothing to push"
+
+    - name: Push changes
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/nus-iss-swe5001-team7/groupOrderOrderPlatform.git HEAD:main || echo "Nothing to push"
 
   build:
 
