@@ -5,9 +5,11 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      PGDATA: /data/postgres
+      POSTGRES_DB: user
     volumes:
-      - postgres:/data/postgres
+      - postgres_data:/var/lib/postgresql/data
+      - ./init_postgres.sh:/docker-entrypoint-initdb.d/init_postgres.sh
+      - ./create_db_and_user.sql:/docker-entrypoint-initdb.d/create_db_and_user.sql
     ports:
       - "5432:5432"
     networks:
@@ -28,6 +30,20 @@ services:
     networks:
       - postgres
     restart: unless-stopped
+
+  mongodb:
+    image: mongo:4.2.3-bionic
+    container_name: mongodb
+    networks:
+      - logmonnet
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+      MONGO_INITDB_DATABASE: restaurant
+    volumes:
+      - ./init_mongodb.js:/docker-entrypoint-initdb.d/init.js
+    ports:
+      - "27017:27017"
 
   zipkin:
     image: openzipkin/zipkin
@@ -71,6 +87,7 @@ services:
       - postgres
     depends_on:
       - postgres
+      - service-registry
 
   restaurant-service:
     image: minjun7/restaurant-service:latest
@@ -79,18 +96,23 @@ services:
       - "8090:8090"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATA_MONGODB_URI=mongodb://root:rootpassword@mongodb:27017/restaurant?authSource=admin
     networks:
       - spring
-      - postgres
+      - logmonnet
     depends_on:
-      - postgres
+      - mongodb
+      - service-registry
+
 
 networks:
   postgres:
     driver: bridge
   spring:
     driver: bridge
+  logmonnet:
+    driver: bridge
 
 volumes:
-  postgres:
+  postgres_data:
   pgadmin:
