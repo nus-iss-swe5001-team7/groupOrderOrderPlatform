@@ -159,11 +159,11 @@ jobs:
             "restaurant-service:latest"
             "service-registry:latest"
             "api-gateway:latest"
-            "postgres:latest"
             "zipkin:latest"
-            "mongodb:latest"
             "pgadmin:latest"
+            "mongodb:latest" 
             "order-service:latest"
+            "postgres:latest"
           )
 
           # Iterate over each image and process
