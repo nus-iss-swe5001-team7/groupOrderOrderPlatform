@@ -23,7 +23,6 @@
 		<module>user-service</module>
 		<module>service-registry</module>
 		<module>api-gateway</module>
-		<module>utils</module>
 	</modules>
 
 	<properties>
