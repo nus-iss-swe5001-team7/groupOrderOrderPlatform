@@ -155,9 +155,9 @@ jobs:
         run: |
           # Define an array of images
           images=(
-            "user-service:latest"
-            "restaurant-service:latest"
-            "service-registry:latest"
+            #"user-service:latest"
+            #"restaurant-service:latest"
+            #"service-registry:latest"
             "api-gateway:latest"
             #"zipkin"
             #"pgadmin4"
