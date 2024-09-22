@@ -158,7 +158,7 @@ jobs:
             "restaurant-service:latest"
             "service-registry:latest"
             "api-gateway:latest"
-            "order-service:latest"
+            #"order-service:latest"
           )
 
           # Iterate over each image and process
