@@ -156,7 +156,7 @@ jobs:
           # Define an array of images
           images=(
             "service-registry:latest"
-            #"api-gateway:latest"
+            "api-gateway:latest"
             #"user-service:latest"
             #"restaurant-service:latest"
 
