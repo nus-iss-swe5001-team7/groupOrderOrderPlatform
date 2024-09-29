@@ -157,7 +157,7 @@ jobs:
           images=(
             "service-registry:latest"
             "api-gateway:latest"
-            #"user-service:latest"
+            "user-service:latest"
             #"restaurant-service:latest"
             #"order-service:latest"
             
