@@ -1,12 +1,11 @@
+
 name: GroupOrder Backend CICD
 
 on:
   push:
-    branches: "*"  # Matches all branches
-    # branches: [ "master" ]
+    branches: [ "master" ]
   pull_request:
-    branches: "*"  # Matches all branches
-    # branches: [ "master" ]
+    branches: [ "master" ]
     types: [opened, synchronize, reopened]
 
 # Not in use
@@ -155,17 +154,11 @@ jobs:
         run: |
           # Define an array of images
           images=(
+            "user-service:latest"
+            "restaurant-service:latest"
             "service-registry:latest"
-            #"api-gateway:latest"
-            #"user-service:latest"
-            #"restaurant-service:latest"
-            #"order-service:latest"
-            
-            #"zipkin"
-            #"pgadmin4"
-            #"mongo:4.2.3-bionic" 
-            #"postgres"
-            #"order-service:latest"
+            "api-gateway:latest"
+            "order-service:latest"
           )
 
           # Iterate over each image and process
