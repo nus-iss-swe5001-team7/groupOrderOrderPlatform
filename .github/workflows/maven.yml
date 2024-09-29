@@ -156,10 +156,11 @@ jobs:
           # Define an array of images
           images=(
             "service-registry:latest"
-            "api-gateway:latest"
-            "user-service:latest"
-            "restaurant-service:latest"
-
+            #"api-gateway:latest"
+            #"user-service:latest"
+            #"restaurant-service:latest"
+            #"order-service:latest"
+            
             #"zipkin"
             #"pgadmin4"
             #"mongo:4.2.3-bionic" 
