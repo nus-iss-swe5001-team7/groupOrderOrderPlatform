@@ -14,3 +14,6 @@
 	path = order-service
 	url = https://github.com/nus-iss-swe5001-team7/order-service.git
 	branch = master
+[submodule "notification"]
+	path = notification
+	url = https://github.com/nus-iss-swe5001-team7/notification.git
