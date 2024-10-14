@@ -7,3 +7,7 @@
 /dataSources/
 /dataSources.local.xml
 /.idea
+*.class
+*/target/
+.idea/compiler.xml
+.idea/encodings.xml

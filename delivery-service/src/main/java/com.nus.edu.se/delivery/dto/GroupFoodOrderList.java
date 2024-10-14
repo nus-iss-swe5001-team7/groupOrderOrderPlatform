@@ -18,7 +18,7 @@ public class GroupFoodOrderList {
 
     String restaurantName;
 
-    UUID restaurantId;
+    String restaurantId;
 
     private String location;
 
@@ -60,11 +60,11 @@ public class GroupFoodOrderList {
         this.orderStatus = orderStatus;
     }
 
-    public UUID getRestaurantId() {
+    public String getRestaurantId() {
         return restaurantId;
     }
 
-    public void setRestaurantId(UUID restaurantId) {
+    public void setRestaurantId(String restaurantId) {
         this.restaurantId = restaurantId;
     }
 
