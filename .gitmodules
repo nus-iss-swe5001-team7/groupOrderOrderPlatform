@@ -8,6 +8,7 @@
 [submodule "user-service"]
 	path = user-service
 	url = https://github.com/nus-iss-swe5001-team7/user-service.git
+	branch = GFO-47-deployment
 [submodule "restaurant-service"]
 	path = restaurant-service
 	url = https://github.com/nus-iss-swe5001-team7/restaurant-service.git
