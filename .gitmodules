@@ -12,7 +12,8 @@
 [submodule "restaurant-service"]
 	path = restaurant-service
 	url = https://github.com/nus-iss-swe5001-team7/restaurant-service.git
+	branch = GFO-47-deployment
 [submodule "order-service"]
 	path = order-service
 	url = https://github.com/nus-iss-swe5001-team7/order-service.git
-	branch = master
+	branch = GFO-47-deployment
