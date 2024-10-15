@@ -158,8 +158,9 @@ jobs:
             "service-registry:latest"
             "api-gateway:latest"
             "user-service:latest"
-            #"restaurant-service:latest"
-            #"order-service:latest"
+            "restaurant-service:latest"
+            "order-service:latest"
+            "delivery-service:latest"
             
             #"zipkin"
             #"pgadmin4"
