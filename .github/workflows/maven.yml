@@ -3,9 +3,9 @@ name: GroupOrder Backend CICD
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "develop" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "develop" ]
     types: [opened, synchronize, reopened]
 
 # Not in use
@@ -159,6 +159,7 @@ jobs:
             "service-registry:latest"
             "api-gateway:latest"
             "order-service:latest"
+            "delivery-service:latest"
           )
 
           # Iterate over each image and process
