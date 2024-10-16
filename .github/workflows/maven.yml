@@ -9,8 +9,9 @@ on:
     types: [opened, synchronize, reopened]
 
 # Not in use
-# env:
-#   ECR_REPOSITORY: nusiss/swe5001
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECS_CLUSTER_NAME: AWS-SWE5001
 
 # env:
 #   # Define your public ECR repositories
@@ -197,3 +198,18 @@ jobs:
 #          deployment_package: groupFoodOrder-0.0.1-SNAPSHOT.jar
 #          wait_for_deployment: true
 #          wait_for_environment_recovery: 60
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Update ECS service
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER_NAME }} \
+            --service api-gateway-service \
+            --force-new-deployment
+      - name: Confirm ECS deployment status
+        run: |
+          aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER_NAME }} --services api-gateway-service
