@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,6 +51,9 @@ public class DeliveryService {
             groupFoodOrder = groupOrder.get();
             groupFoodOrder.setId(orderUUID);
             groupFoodOrder.setStatus(status);
+            if (status== GroupFoodOrder.Status.DELIVERED || status== GroupFoodOrder.Status.ON_DELIVERY){
+                groupFoodOrder.setGroupOrderDeliveryTime(new Date());
+            }
             groupFoodOrder = deliveryRepository.saveAndFlush(groupFoodOrder);
         } else {
             throw new RuntimeException("Not found GroupOrder with orderId = " + orderId);
