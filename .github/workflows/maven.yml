@@ -210,12 +210,20 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-      - name: Update ECS service
+      - name: Update ECS services
         run: |
-          aws ecs update-service \
-            --cluster ${{ env.ECS_CLUSTER_NAME }} \
-            --service api-gateway-service \
-            --force-new-deployment
+          services=("api-gateway-service" "delivery-service" "user-service" "order-service" "restaurant-service")
+          for service in "${services[@]}"; do
+            echo "Updating $service"
+            aws ecs update-service \
+              --cluster ${{ env.ECS_CLUSTER_NAME }} \
+              --service "$service" \
+              --force-new-deployment
+          done
       - name: Confirm ECS deployment status
         run: |
-          aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER_NAME }} --services api-gateway-service
+          services=("api-gateway-service" "delivery-service" "user-service" "order-service" "restaurant-service")
+          for service in "${services[@]}"; do
+            echo "Waiting for $service to become stable"
+            aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER_NAME }} --services "$service"
+          done
