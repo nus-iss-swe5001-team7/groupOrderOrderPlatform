@@ -21,4 +21,7 @@
 	path = delivery-service
 	url = https://github.com/nus-iss-swe5001-team7/delivery-service.git
 	branch = develop
-
+[submodule "notification"]
+	path = notification
+	url = https://github.com/nus-iss-swe5001-team7/notification.git
+	branch = develop
