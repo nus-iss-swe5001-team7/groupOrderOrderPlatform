@@ -159,6 +159,7 @@ jobs:
             "service-registry:latest"
             "api-gateway:latest"
             "order-service:latest"
+            "notification:latest"
           )
 
           # Iterate over each image and process
