@@ -37,20 +37,41 @@ jobs:
       run: |
         git config --global user.name "NicholasYSX"
         git config --global user.email "e1337517@u.nus.edu"
+        
 
-    - name: Update Submodules
+#added to test ceheck for submodules changes and update only changed submodules
+    - name: Check for changed submodules
+      id: check_changes
       run: |
-        git submodule sync
-        git submodule update --init --recursive
-        git add .
-        git commit -m "Update submodules" || echo "No changes to commit"
-        git push origin HEAD:main || echo "Nothing to push"
+        # List modified files and filter for submodule paths
+        git diff --name-only HEAD~1 | grep -E '^(user-service|restaurant-service|service-registry|api-gateway|order-service|delivery-service)/' || echo "no changes"
 
-    - name: Push changes
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Update Changed Submodules
+      if: steps.check_changes.outputs.changed != 'no changes'
       run: |
-        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/nus-iss-swe5001-team7/groupOrderOrderPlatform.git HEAD:main || echo "Nothing to push"
+        # Loop through the modified submodules and update them
+        for submodule in $(git diff --name-only HEAD~1 | grep -E '^(user-service|restaurant-service|service-registry|api-gateway|order-service|delivery-service)/'); do
+          echo "Updating submodule: $submodule"
+          git submodule update --init --recursive $submodule
+          git add $submodule
+        done
+        git commit -m "Update changed submodules" || echo "No changes to commit"
+        git push origin HEAD:develop-separatecicd || echo "Nothing to push"
+
+#original
+#  - name: Update Submodules
+#      run: |
+#        git submodule sync
+#        git submodule update --init --recursive
+#        git add .
+#        git commit -m "Update submodules" || echo "No changes to commit"
+#        git push origin HEAD:main || echo "Nothing to push"
+
+#    - name: Push changes
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      run: |
+#        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/nus-iss-swe5001-team7/groupOrderOrderPlatform.git HEAD:main || echo "Nothing to push"
 
   build:
     needs: update-submodules
