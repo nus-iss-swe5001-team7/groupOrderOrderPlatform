@@ -161,6 +161,7 @@ jobs:
             "api-gateway:latest"
             "order-service:latest"
             "delivery-service:latest"
+            "notification:latest"
           )
 
           # Iterate over each image and process
