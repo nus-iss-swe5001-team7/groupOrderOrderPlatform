@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
+        <module name="delivery-service" />
         <module name="restaurant-service" />
         <module name="user-service" />
         <module name="order-service" />
@@ -23,6 +24,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
+      <module name="delivery-service" options="-parameters" />
       <module name="groupFoodOrderPlatform" options="" />
       <module name="order-service" options="-parameters" />
       <module name="restaurant-service" options="-parameters" />

@@ -3,14 +3,15 @@ name: GroupOrder Backend CICD
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "develop" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "develop" ]
     types: [opened, synchronize, reopened]
 
 # Not in use
-# env:
-#   ECR_REPOSITORY: nusiss/swe5001
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECS_CLUSTER_NAME: AWS-SWE5001
 
 # env:
 #   # Define your public ECR repositories
@@ -159,6 +160,7 @@ jobs:
             "service-registry:latest"
             "api-gateway:latest"
             "order-service:latest"
+            "delivery-service:latest"
             "notification:latest"
           )
 
@@ -197,3 +199,32 @@ jobs:
 #          deployment_package: groupFoodOrder-0.0.1-SNAPSHOT.jar
 #          wait_for_deployment: true
 #          wait_for_environment_recovery: 60
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Update ECS services
+        run: |
+          services=("api-gateway-service" "delivery-service" "user-service" "order-service" "restaurant-service")
+          for service in "${services[@]}"; do
+            echo "Updating $service"
+            aws ecs update-service \
+              --cluster ${{ env.ECS_CLUSTER_NAME }} \
+              --service "$service" \
+              --force-new-deployment
+          done
+      - name: Confirm ECS deployment status
+        run: |
+          services=("api-gateway-service" "delivery-service" "user-service" "order-service" "restaurant-service")
+          for service in "${services[@]}"; do
+            echo "Waiting for $service to become stable"
+            aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER_NAME }} --services "$service"
+          done

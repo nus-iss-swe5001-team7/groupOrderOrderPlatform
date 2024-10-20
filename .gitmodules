@@ -4,16 +4,24 @@
 [submodule "api-gateway"]
 	path = api-gateway
 	url = https://github.com/nus-iss-swe5001-team7/api-gateway.git
+	branch = develop
 [submodule "user-service"]
 	path = user-service
 	url = https://github.com/nus-iss-swe5001-team7/user-service.git
+	branch = develop
 [submodule "restaurant-service"]
 	path = restaurant-service
 	url = https://github.com/nus-iss-swe5001-team7/restaurant-service.git
+	branch = develop
 [submodule "order-service"]
 	path = order-service
 	url = https://github.com/nus-iss-swe5001-team7/order-service.git
-	branch = master
+	branch = develop
+[submodule "delivery-service"]
+	path = delivery-service
+	url = https://github.com/nus-iss-swe5001-team7/delivery-service.git
+	branch = develop
 [submodule "notification"]
 	path = notification
 	url = https://github.com/nus-iss-swe5001-team7/notification.git
+	branch = develop
