@@ -213,7 +213,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Update ECS services
         run: |
-          services=("api-gateway-service" "delivery-service" "user-service" "order-service" "restaurant-service")
+          services=("api-gateway-service" "delivery-service" "user-service" "order-service" "restaurant-service" "notification")
           for service in "${services[@]}"; do
             echo "Updating $service"
             aws ecs update-service \
@@ -223,7 +223,7 @@ jobs:
           done
       - name: Confirm ECS deployment status
         run: |
-          services=("api-gateway-service" "delivery-service" "user-service" "order-service" "restaurant-service")
+          services=("api-gateway-service" "delivery-service" "user-service" "order-service" "restaurant-service" "notification")
           for service in "${services[@]}"; do
             echo "Waiting for $service to become stable"
             aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER_NAME }} --services "$service"
