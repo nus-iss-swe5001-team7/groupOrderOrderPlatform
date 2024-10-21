@@ -219,18 +219,15 @@ jobs:
         
         
            # Use official Zipkin Docker images
-          # Define the image name
           IMAGE_NAME="${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/zipkin:latest"
           
           if ! aws ecr describe-images --repository-name zipkin --image-ids imageTag=latest >/dev/null 2>&1; then
-          echo "Image not found in ECR. Pushing the image..."
-          docker tag openzipkin/zipkin:latest  ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/zipkin:latest
-          docker push ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/zipkin:latest
+          echo "Zipkin not found in ECR. Pushing the image..."
+          docker tag openzipkin/zipkin:latest "$IMAGE_NAME"
+          docker push "$IMAGE_NAME"
           else
           echo "Zipkin already exists in ECR. No need to push."
           fi
-         
-         
 
 # Old deployment steps
 #  deploy:
