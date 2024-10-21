@@ -223,6 +223,7 @@ jobs:
           
           if ! aws ecr describe-images --repository-name zipkin --image-ids imageTag=latest >/dev/null 2>&1; then
           echo "Zipkin not found in ECR. Pushing the image..."
+          docker pull openzipkin/zipkin:latest
           docker tag openzipkin/zipkin:latest "$IMAGE_NAME"
           docker push "$IMAGE_NAME"
           else
