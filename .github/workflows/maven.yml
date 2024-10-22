@@ -53,6 +53,7 @@ jobs:
         git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/nus-iss-swe5001-team7/groupOrderOrderPlatform.git HEAD:main || echo "Nothing to push"
 
   sast_owasp_odc:
+      needs: update-submodules
       runs-on: ubuntu-latest
       steps:
         - name: Checkout Code
@@ -81,6 +82,7 @@ jobs:
               ./ODC-report
 
   snyk:
+    needs: update-submodules
     runs-on: ubuntu-latest
     permissions:
       # required for all workflows
