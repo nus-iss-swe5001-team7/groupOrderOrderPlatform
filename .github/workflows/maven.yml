@@ -70,7 +70,7 @@ jobs:
             unzip dependency-check-9.1.0-release.zip
         - name: Run scan with ODC
           run: |
-            dependency-check/bin/dependency-check.sh --out . --scan . > ODC-report
+            dependency-check/bin/dependency-check.sh --out . --scan . | tee ODC-report
         - name: Archive production artifacts
           uses: actions/upload-artifact@v4
           with:
