@@ -124,7 +124,7 @@ jobs:
            args: --sarif-file-output=results.sarif
 
   build:
-    needs: update-submodules
+    needs: sast_owasp_odc
     name: Build
     #Run on Ubuntu using the latest version
     runs-on: ubuntu-latest
