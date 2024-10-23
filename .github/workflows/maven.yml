@@ -51,9 +51,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/nus-iss-swe5001-team7/groupOrderOrderPlatform.git HEAD:main || echo "Nothing to push"
-
   sast_owasp_odc:
-      needs: update-submodules
+      needs: snyk
       runs-on: ubuntu-latest
       steps:
         - name: Checkout Code
@@ -103,7 +102,7 @@ jobs:
            args: --sarif-file-output=results.sarif
 
   build:
-    needs: update-submodules
+    needs: sast_owasp_odc
     name: Build
     #Run on Ubuntu using the latest version
     runs-on: ubuntu-latest
