@@ -104,6 +104,7 @@ jobs:
 
   sast_owasp_odc:
       needs: unit-test
+      if: github.ref == 'refs/heads/develop'
       runs-on: ubuntu-latest
       steps:
         - name: Checkout Code
@@ -133,6 +134,7 @@ jobs:
 
   build:
     needs: sast_owasp_odc
+    if: github.ref == 'refs/heads/develop'
     name: Build
     #Run on Ubuntu using the latest version
     runs-on: ubuntu-latest
@@ -293,6 +295,7 @@ jobs:
 
   deploy:
     needs: build
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
 
     steps:
@@ -323,6 +326,7 @@ jobs:
 
   zap_scan:
     needs: deploy
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     name: zap scan the web app
     steps:
