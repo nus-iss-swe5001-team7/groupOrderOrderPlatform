@@ -67,7 +67,7 @@ jobs:
           cache: maven
 
       - name: Run Unit Test with Maven
-        run: mvn test
+        run: mvn clean install
 
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v3
