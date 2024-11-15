@@ -70,8 +70,8 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Run Unit Test with Maven
-        run: mvn test
+      - name: Run Unit Test and Generate Coverage Report
+        run: mvn clean verify
 
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v3
