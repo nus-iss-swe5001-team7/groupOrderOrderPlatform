@@ -117,8 +117,8 @@ jobs:
             cache: maven
         - name: OWASP Dependency Check
           run: |
-            wget https://github.com/jeremylong/DependencyCheck/releases/download/v10.0.4/dependency-check-10.0.4-release.zip
-            unzip dependency-check-10.0.4-release.zip
+            wget https://github.com/jeremylong/DependencyCheck/releases/download/v11.1.0/dependency-check-11.1.0-release.zip
+            unzip dependency-check-11.1.0-release.zip
         - name: Run scan with ODC
           env:
             NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
