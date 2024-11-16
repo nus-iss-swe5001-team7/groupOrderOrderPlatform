@@ -78,9 +78,10 @@ jobs:
         with:
           args: --sarif-file-output=results.sarif
 
-  checkstyle_linting:
+  check-style-unit-test:
     needs: update-submodules
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -101,28 +102,6 @@ jobs:
 
       - name: Run Checkstyle
         run: mvn checkstyle:check
-
-      - name: Run Test with Maven
-        run: mvn test
-
-  unit-test:
-    needs: snyk
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Checkout code with submodules
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive  # This ensures submodules are checked out
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: maven
 
       - name: Run Unit Test and Generate Coverage Report
         run: mvn test
