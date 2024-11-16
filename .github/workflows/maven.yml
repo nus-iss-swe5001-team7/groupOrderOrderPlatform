@@ -2,9 +2,15 @@ name: GroupOrder Backend CICD
 
 on:
   push:
-    branches: [ "develop" ]
+    branches:
+      - "master"
+      - "develop"
+      - "features/*" # Matches all branches starting with 'features/'
   pull_request:
-    branches: [ "develop" ]
+    branches:
+      - "master"
+      - "develop"
+      - "features/*" # Matches all branches starting with 'features/'
     types: [opened, synchronize, reopened]
 
 # Not in use
@@ -72,8 +78,8 @@ jobs:
         with:
           args: --sarif-file-output=results.sarif
 
-  unit-test:
-    needs: snyk
+  check-style-unit-test:
+    needs: update-submodules
     runs-on: ubuntu-latest
 
     steps:
@@ -91,6 +97,12 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Build with Maven
+        run: mvn -B clean package -DskipTests=false
+
+      - name: Run Checkstyle
+        run: mvn checkstyle:check
+
       - name: Run Unit Test and Generate Coverage Report
         run: mvn test
 
@@ -101,9 +113,10 @@ jobs:
           path: target/site/jacoco/index.html
 
 
-
+  # A job that runs only on push or pull request to the 'master' branch
   sast_owasp_odc:
-      needs: unit-test
+      needs: snyk
+      if: github.event_name == 'push' || github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
       runs-on: ubuntu-latest
       steps:
         - name: Checkout Code
@@ -131,8 +144,10 @@ jobs:
             path: |
               ./ODC-report
 
+  # A job that runs only on push or pull request to the 'master' branch
   build:
     needs: sast_owasp_odc
+    if: github.event_name == 'push' || github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
     name: Build
     #Run on Ubuntu using the latest version
     runs-on: ubuntu-latest
@@ -291,8 +306,10 @@ jobs:
 #          wait_for_deployment: true
 #          wait_for_environment_recovery: 60
 
+  # A job that runs only on push or pull request to the 'master' branch
   deploy:
     needs: build
+    if: github.event_name == 'push' || github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
 
     steps:
@@ -321,8 +338,10 @@ jobs:
             aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER_NAME }} --services "$service"
           done
 
+  # A job that runs only on push or pull request to the 'master' branch
   zap_scan:
     needs: deploy
+    if: github.event_name == 'push' || github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     name: zap scan the web app
     steps:
