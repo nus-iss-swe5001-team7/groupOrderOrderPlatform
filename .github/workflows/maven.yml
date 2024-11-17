@@ -5,12 +5,12 @@ on:
     branches:
       - "master"
       - "develop"
-      - "features/*" # Matches all branches starting with 'features/'
+      - "features/*" # Matches all branches starting with 'feature/'
   pull_request:
     branches:
       - "master"
       - "develop"
-      - "features/*" # Matches all branches starting with 'features/'
+      - "feature/*" # Matches all branches starting with 'feature/'
     types: [opened, synchronize, reopened]
 
 env:
