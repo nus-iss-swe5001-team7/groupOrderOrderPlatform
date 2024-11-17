@@ -141,7 +141,7 @@ jobs:
 
   # A job that runs only on push or pull request to the 'master' branch
   build:
-    #    needs: sast_owasp_odc
+    needs: sast_owasp_odc
     if: github.event_name == 'push' || github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
     name: Build
     #Run on Ubuntu using the latest version
