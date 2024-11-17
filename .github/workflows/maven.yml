@@ -5,26 +5,17 @@ on:
     branches:
       - "master"
       - "develop"
-      - "features/*" # Matches all branches starting with 'features/'
+      - "features/*" # Matches all branches starting with 'feature/'
   pull_request:
     branches:
       - "master"
       - "develop"
-      - "features/*" # Matches all branches starting with 'features/'
+      - "feature/*" # Matches all branches starting with 'feature/'
     types: [opened, synchronize, reopened]
 
-# Not in use
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECS_CLUSTER_NAME: AWS-SWE5001
-
-# env:
-#   # Define your public ECR repositories
-#   ECR_PUBLIC_REPOSITORIES: |
-#     user-service:public.ecr.aws/a5o0l5p8/user-service
-#     restaurant-service:public.ecr.aws/a5o0l5p8/restaurant-service
-#     service-registry:public.ecr.aws/a5o0l5p8/service-registry
-#     api-gateway:public.ecr.aws/a5o0l5p8/api-gateway
 
 jobs:
 
@@ -32,30 +23,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-      with:
-        submodules: true  # Ensures submodules are initialized and updated
-        fetch-depth: 0
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true  # Ensures submodules are initialized and updated
+          fetch-depth: 0
 
-    - name: Set up Git user
-      run: |
-        git config --global user.name "NicholasYSX"
-        git config --global user.email "e1337517@u.nus.edu"
+      - name: Set up Git user
+        run: |
+          git config --global user.name "NicholasYSX"
+          git config --global user.email "e1337517@u.nus.edu"
 
-    - name: Update Submodules
-      run: |
-        git submodule sync
-        git submodule update --init --recursive
-        git add .
-        git commit -m "Update submodules" || echo "No changes to commit"
-        git push origin HEAD:main || echo "Nothing to push"
+      - name: Update Submodules
+        run: |
+          git submodule sync
+          git submodule update --init --recursive
+          git add .
+          git commit -m "Update submodules" || echo "No changes to commit"
+          git push origin HEAD:main || echo "Nothing to push"
 
-    - name: Push changes
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/nus-iss-swe5001-team7/groupOrderOrderPlatform.git HEAD:main || echo "Nothing to push"
+      - name: Push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/nus-iss-swe5001-team7/groupOrderOrderPlatform.git HEAD:main || echo "Nothing to push"
 
   snyk:
     needs: update-submodules
@@ -78,75 +69,79 @@ jobs:
         with:
           args: --sarif-file-output=results.sarif
 
-#  check-style-unit-test:
-#    needs: update-submodules
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - uses: actions/checkout@v4
-#
-#      - name: Checkout code with submodules
-#        uses: actions/checkout@v3
-#        with:
-#          submodules: recursive  # This ensures submodules are checked out
-#
-#      - name: Set up JDK 17
-#        uses: actions/setup-java@v4
-#        with:
-#          java-version: '17'
-#          distribution: 'temurin'
-#          cache: maven
-#
-#      - name: Build with Maven
-#        run: mvn -B clean package -DskipTests=false
-#
-#      - name: Run Checkstyle
-#        run: mvn checkstyle:check
-#
-#      - name: Run Unit Test and Generate Coverage Report
-#        run: mvn test
-#
-#      - name: Upload Coverage Report
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: coverage-report
-#          path: target/site/jacoco/index.html
+  unit-test:
+    needs: snyk
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout code with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive  # This ensures submodules are checked out
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B clean package -DskipTests=true
+
+      - name: Run Checkstyle
+        run: mvn checkstyle:check
+
+      - name: Run Unit Test and Generate Coverage Report
+        run: mvn test
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            ./user-service/target/site/jacoco/
+            ./order-service/target/site/jacoco/
+            ./restaurant-service/target/site/jacoco/
+            ./delivery-service/target/site/jacoco/
 
 
   # A job that runs only on push or pull request to the 'master' branch
-#  sast_owasp_odc:
-#      needs: snyk
-#      if: github.event_name == 'push' || github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
-#      runs-on: ubuntu-latest
-#      steps:
-#        - name: Checkout Code
-#          uses: actions/checkout@v4
-#
-#        - name: Set up JDK 17
-#          uses: actions/setup-java@v4
-#          with:
-#            java-version: '17'
-#            distribution: 'temurin'
-#            cache: maven
-#        - name: OWASP Dependency Check
-#          run: |
-#            wget https://github.com/jeremylong/DependencyCheck/releases/download/v11.1.0/dependency-check-11.1.0-release.zip
-#            unzip dependency-check-11.1.0-release.zip
-#        - name: Run scan with ODC
-#          env:
-#            NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-#          run: |
-#            dependency-check/bin/dependency-check.sh --out . --scan . | tee ODC-report
-#        - name: Archive production artifacts
-#          uses: actions/upload-artifact@v4
-#          with:
-#            name: sast report
-#            path: |
-#              ./ODC-report
+  sast_owasp_odc:
+    needs: snyk
+    if: github.event_name == 'push' || github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: OWASP Dependency Check
+        run: |
+          wget https://github.com/jeremylong/DependencyCheck/releases/download/v11.1.0/dependency-check-11.1.0-release.zip
+          unzip dependency-check-11.1.0-release.zip
+      - name: Run scan with ODC
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: |
+          dependency-check/bin/dependency-check.sh --out . --scan . | tee ODC-report
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sast report
+          path: |
+            ./ODC-report
 
   # A job that runs only on push or pull request to the 'master' branch
   build:
-#    needs: sast_owasp_odc
+    needs: sast_owasp_odc
     if: github.event_name == 'push' || github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
     name: Build
     #Run on Ubuntu using the latest version
@@ -244,7 +239,7 @@ jobs:
       #     docker build -t $ECR_REGISTRY/service-registry:$IMAGE_TAG ./service-registry
       #     docker push $ECR_REGISTRY/service-registry:$IMAGE_TAG
 
-# Working flow, commented for temp testing
+      # Working flow, commented for temp testing
       - name: Process each microservice
         run: |
           # Define an array of images
@@ -264,8 +259,8 @@ jobs:
             docker tag ${{ secrets.DOCKERHUB_USERNAME }}/$image ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/$(echo ${image%%:*} | tr '[:upper:]' '[:lower:]'):${image##*:}
             docker push ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/${image%%:*}:${image##*:}
           done
-        
-        
+          
+          
            # Use official Zipkin Docker images
           IMAGE_NAME="${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/zipkin:latest"
           
@@ -277,34 +272,6 @@ jobs:
           else
           echo "Zipkin already exists in ECR. No need to push."
           fi
-
-# Old deployment steps
-#  deploy:
-#    #Depends on build's job
-#    needs: build
-#    name: Deploy
-#    #Run on Ubuntu using the latest version
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Download JAR
-#        #Download the artifact which was uploaded in the build's job
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: artifact
-#      #Deploy the artifact (JAR) into AWS Beanstalk
-#      - name: Deploy to EB
-#        uses: einaregilsson/beanstalk-deploy@v18
-#        with:
-#          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          use_existing_version_if_available: true
-#          application_name: grouporder-backend
-#          environment_name: ${{ secrets.AWS_ENVIROMENT_NAME }}
-#          version_label: ${{github.SHA}}
-#          region: ${{ secrets.AWS_REGION }}
-#          deployment_package: groupFoodOrder-0.0.1-SNAPSHOT.jar
-#          wait_for_deployment: true
-#          wait_for_environment_recovery: 60
 
   # A job that runs only on push or pull request to the 'master' branch
   deploy:
@@ -339,31 +306,31 @@ jobs:
           done
 
   # A job that runs only on push or pull request to the 'master' branch
-#  zap_scan:
-#    needs: deploy
-#    if: github.event_name == 'push' || github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
-#    runs-on: ubuntu-latest
-#    name: zap scan the web app
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#        with:
-#          ref: master
-#      - name: Set up JDK
-#        uses: actions/setup-java@v2
-#        with:
-#          java-version: '17'
-#          distribution: 'temurin'
-#      - name: ZAP Scan
-#        uses: zaproxy/action-full-scan@v0.10.0
-#        with:
-#          token: ${{ secrets.GH_TOKEN_ZAP_SCAN}}
-#          docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
-#          target: ${{ secrets.BACKEND_WEB_APP_PROD_ADD }}
-#          cmd_options: '-a'
-#      - name: Archive staging artifacts
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: zap report
-#          path: |
-#            ./report_html.html
+  zap_scan:
+    needs: deploy
+    if: github.event_name == 'push' || github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    name: zap scan the web app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@v0.10.0
+        with:
+          token: ${{ secrets.GH_TOKEN_ZAP_SCAN}}
+          docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
+          target: ${{ secrets.BACKEND_WEB_APP2_PROD_ADD }}
+          cmd_options: '-a'
+      - name: Archive staging artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap report
+          path: |
+            ./report_html.html
