@@ -138,6 +138,7 @@ jobs:
           name: sast report
           path: |
             ./ODC-report
+            /home/runner/work/groupOrderOrderPlatform/groupOrderOrderPlatform/dependency-check-report.html
 
   # A job that runs only on 'master' branch
   build:
