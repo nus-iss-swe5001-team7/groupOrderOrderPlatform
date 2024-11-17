@@ -108,10 +108,10 @@ jobs:
             ./delivery-service/target/site/jacoco/
 
 
-  # A job that runs only on push or pull request to the 'master' branch
+  # A job that runs only on 'develop' & master branch
   sast_owasp_odc:
     needs: snyk
-    if: github.event_name == 'push' || github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -139,10 +139,10 @@ jobs:
           path: |
             ./ODC-report
 
-  # A job that runs only on push or pull request to the 'master' branch
+  # A job that runs only on 'master' branch
   build:
     needs: sast_owasp_odc
-    if: github.event_name == 'push' || github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     name: Build
     #Run on Ubuntu using the latest version
     runs-on: ubuntu-latest
@@ -151,7 +151,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Checkout code with submodules
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive  # This ensures submodules are checked out
 
@@ -182,7 +182,7 @@ jobs:
         run: mvn clean package -P build-docker-image
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -191,7 +191,7 @@ jobs:
       #Working flow commented for temp testing
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       # # Added to test for public repo
       # - name: Login to Amazon ECR Public
@@ -273,15 +273,15 @@ jobs:
           echo "Zipkin already exists in ECR. No need to push."
           fi
 
-  # A job that runs only on push or pull request to the 'master' branch
+  # A job that runs only on 'master' branch
   deploy:
     needs: build
-    if: github.event_name == 'push' || github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
 
     steps:
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -305,10 +305,10 @@ jobs:
             aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER_NAME }} --services "$service"
           done
 
-  # A job that runs only on push or pull request to the 'master' branch
+  # A job that runs only on 'master' branch
   zap_scan:
     needs: deploy
-    if: github.event_name == 'push' || github.event_name == 'pull_request' && github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     name: zap scan the web app
     steps:
