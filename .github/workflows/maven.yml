@@ -131,13 +131,16 @@ jobs:
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
-          dependency-check/bin/dependency-check.sh --out . --scan . | tee ODC-report
+          mkdir -p ODC-report
+          dependency-check/bin/dependency-check.sh --out ODC-report --scan .
+
       - name: Archive production artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: sast report
+          name: sast-report
           path: |
-            ./ODC-report
+            ODC-report/
+            ODC-report/dependency-check-report.html
 
   # A job that runs only on 'master' branch
   build:
