@@ -69,43 +69,43 @@ jobs:
         with:
           args: --sarif-file-output=results.sarif
 
-    unit-test:
-      needs: snyk
-      runs-on: ubuntu-latest
+  unit-test:
+    needs: snyk
+    runs-on: ubuntu-latest
 
-      steps:
-        - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-        - name: Checkout code with submodules
-          uses: actions/checkout@v3
-          with:
-            submodules: recursive  # This ensures submodules are checked out
+      - name: Checkout code with submodules
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive  # This ensures submodules are checked out
 
-        - name: Set up JDK 17
-          uses: actions/setup-java@v4
-          with:
-            java-version: '17'
-            distribution: 'temurin'
-            cache: maven
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
 
-        - name: Build with Maven
-          run: mvn -B clean package -DskipTests=true
+      - name: Build with Maven
+        run: mvn -B clean package -DskipTests=true
 
-        - name: Run Checkstyle
-          run: mvn checkstyle:check
+      - name: Run Checkstyle
+        run: mvn checkstyle:check
 
-        - name: Run Unit Test and Generate Coverage Report
-          run: mvn test
+      - name: Run Unit Test and Generate Coverage Report
+        run: mvn test
 
-        - name: Upload Coverage Report
-          uses: actions/upload-artifact@v4
-          with:
-            name: coverage-report
-            path: |
-              ./user-service/target/site/jacoco/
-              ./order-service/target/site/jacoco/
-              ./restaurant-service/target/site/jacoco/
-              ./delivery-service/target/site/jacoco/
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            ./user-service/target/site/jacoco/
+            ./order-service/target/site/jacoco/
+            ./restaurant-service/target/site/jacoco/
+            ./delivery-service/target/site/jacoco/
 
 
   # A job that runs only on push or pull request to the 'master' branch
